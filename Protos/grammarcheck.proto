@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrammarCheckService";
+
+package grammarcheck;
+
+service GrammarCheck {
+    rpc CheckSpelling (TextRequest) returns (SpellingResponse);
+    rpc CheckGrammar (TextRequest) returns (GrammarResponse);
+    rpc GetSynonyms (SynonymRequest) returns (SynonymResponse);
+}
+
+message TextRequest {
+    string text = 1;
+    string language = 2;
+}
+
+message SpellingResponse {
+    repeated SpellingError errors = 1;
+}
+
+message SpellingError {
+    string word = 1; 
+    repeated string suggestions = 2;  
+}
+
+message GrammarResponse {
+    repeated GrammarError errors = 1; 
+}
+
+message GrammarError {
+    string sentence = 1;
+    string message = 2;
+}
+
+message SynonymRequest {
+    repeated string words = 1;  
+    string language = 2;
+}
+
+message SynonymResponse {
+    map<string, SynonymList> synonyms = 1;
+}
+
+message SynonymList {
+    repeated string words = 1;
+}
