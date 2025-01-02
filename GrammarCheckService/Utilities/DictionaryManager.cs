@@ -14,8 +14,14 @@ public class DictionaryManager
         if (_loadedDictionaries.ContainsKey(language))
             return _loadedDictionaries[language];
 
-        var affPath = Path.Combine($"{_localPath}/{language}", $"index.aff");
-        var dicPath = Path.Combine($"{_localPath}/{language}", $"index.dic");
+        var dirPath = $"{_localPath}{language}";
+        if (!Directory.Exists(dirPath)) 
+        { 
+            Directory.CreateDirectory(dirPath); 
+        }
+
+        var affPath = Path.Combine(dirPath, $"index.aff");
+        var dicPath = Path.Combine(dirPath, $"index.dic");
 
         if (!File.Exists(affPath) || !File.Exists(dicPath))
             await DownloadDictionary(language, affPath, dicPath);
@@ -28,13 +34,13 @@ public class DictionaryManager
 
     private async Task DownloadDictionary(string language, string affPath, string dicPath)
     {
-        using var client = new HttpClient();
+        var client = new HttpClient();
 
-        var affContent = await client.GetStringAsync($"{_remoteRepo}/{language}/index.aff");
-        File.WriteAllText(affPath, affContent);
+        byte[] fileBytes = await client.GetByteArrayAsync($"{_remoteRepo}/{language}/index.aff"); 
+        await File.WriteAllBytesAsync(affPath, fileBytes);
 
-        var dicContent = await client.GetStringAsync($"{_remoteRepo}/{language}/index.dic");
-        File.WriteAllText(dicPath, dicContent);
+        fileBytes = await client.GetByteArrayAsync($"{_remoteRepo}/{language}/index.dic");
+        await File.WriteAllBytesAsync(dicPath, fileBytes);
     }
 }
 

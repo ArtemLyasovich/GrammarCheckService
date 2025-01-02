@@ -60,4 +60,17 @@ public class GrammarCheckServiceTests
         Assert.IsTrue(englishResponse.Errors.Any(x => x.Word == "tst" && x.Suggestions.Any(x => x == "test")));
         Assert.IsTrue(russianResponse.Errors.Any(x => x.Word == "тст" && x.Suggestions.Any(x => x == "тест")));
     }
+
+    [Test]
+    public async Task CheckSpelling_ShouldWorkForFrenchAndGerman()
+    {
+        var frenchRequest = new TextRequest { Text = "Ceci est un tst", Language = "fr" };
+        var germanRequest = new TextRequest { Text = "Dies ist ein tst", Language = "de" };
+
+        var frenchResponse = await _service.CheckSpelling(frenchRequest, null!);
+        var germanResponse = await _service.CheckSpelling(germanRequest, null!);
+
+        Assert.IsTrue(Directory.Exists($"{AppContext.BaseDirectory}fr"));
+        Assert.IsTrue(Directory.Exists($"{AppContext.BaseDirectory}de"));
+    }
 }
