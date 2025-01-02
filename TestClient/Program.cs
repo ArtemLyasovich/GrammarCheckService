@@ -23,9 +23,20 @@ class Program
 
         try
         {
-            var textRequest = new TextRequest { Text = "Ths is a tst text", Language = "en" };
+            var textRequest = new TextRequest { Text = "Тствовый прмер.", Language = "ru" };
             var spellingResponse = await client.CheckSpellingAsync(textRequest);
             Console.WriteLine("Spelling check completed!");
+            Console.WriteLine("Words with errors and suggestions:");
+
+            foreach (var error in spellingResponse.Errors)
+            {
+                Console.WriteLine($"Word: {error.Word}");
+                Console.WriteLine("Suggestions:");
+                foreach (var suggestion in error.Suggestions)
+                {
+                    Console.WriteLine($"- {suggestion}");
+                }
+            }
 
             var grammarResponse = await client.CheckGrammarAsync(textRequest);
             Console.WriteLine("Grammar check completed!");
