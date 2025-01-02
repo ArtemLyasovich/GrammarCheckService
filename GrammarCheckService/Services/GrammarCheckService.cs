@@ -17,8 +17,22 @@ public class GrammarCheckService : GrammarCheck.GrammarCheckBase
     {
         _logger.LogInformation("CheckSpelling method called.");
 
-        var result = await _hunspellChecker.CheckSpelling(request);
-        
+        SpellingResponse result = new();
+        try 
+        {
+            result = await _hunspellChecker.CheckSpelling(request);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError("HttpRequestException: {0}", ex);
+            throw new RpcException(new Status(StatusCode.Unavailable, "Network error: " + ex.Message));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Exception: {0}", ex);
+            throw new RpcException(new Status(StatusCode.Unknown, "Error downloading the file: " + ex.Message));
+        }
+
         return result;
     }
 

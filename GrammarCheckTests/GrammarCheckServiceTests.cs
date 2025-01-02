@@ -1,3 +1,4 @@
+using Grpc.Core;
 using GrammarCheckService;
 using Microsoft.Extensions.Logging;
 
@@ -72,5 +73,13 @@ public class GrammarCheckServiceTests
 
         Assert.IsTrue(Directory.Exists($"{AppContext.BaseDirectory}fr"));
         Assert.IsTrue(Directory.Exists($"{AppContext.BaseDirectory}de"));
+    }
+
+    [Test]
+    public void CheckSpelling_ShouldThrowRpcExceptionForUnknownLanguage()
+    {
+        var wrongRequest = new TextRequest { Text = "&&%!@%&*%*&$!@&*$^^%! !&@%^^$*!@", Language = "??" };
+
+        Assert.ThrowsAsync<RpcException>(async () => await _service.CheckSpelling(wrongRequest, null!));
     }
 }
