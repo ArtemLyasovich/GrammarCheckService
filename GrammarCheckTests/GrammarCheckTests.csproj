@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -19,6 +19,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GrammarCheckService\GrammarCheckService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<None Include="$(SolutionDir)Dictionaries\**">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+	<None Include="$(SolutionDir)NativeLibraries\**">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
   </ItemGroup>
 
   <ItemGroup>

@@ -47,4 +47,17 @@ public class GrammarCheckServiceTests
         Assert.IsNotNull(response);
         Assert.IsEmpty(response.Synonyms);
     }
+
+    [Test]
+    public async Task CheckSpelling_ShouldWorkForEnglishAndRussian()
+    {
+        var englishRequest = new TextRequest { Text = "This is a tst", Language = "en" };
+        var russianRequest = new TextRequest { Text = "Это тст", Language = "ru" };
+
+        var englishResponse = await _service.CheckSpelling(englishRequest, null!);
+        var russianResponse = await _service.CheckSpelling(russianRequest, null!);
+
+        Assert.IsTrue(englishResponse.Errors.Any(x => x.Word == "tst" && x.Suggestions.Any(x => x == "test")));
+        Assert.IsTrue(russianResponse.Errors.Any(x => x.Word == "тст" && x.Suggestions.Any(x => x == "тест")));
+    }
 }
