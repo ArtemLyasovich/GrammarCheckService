@@ -82,4 +82,17 @@ public class GrammarCheckServiceTests
 
         Assert.ThrowsAsync<RpcException>(async () => await _service.CheckSpelling(wrongRequest, null!));
     }
+
+    [Test]
+    public async Task CheckGrammar_ShouldWorkForEnglishAndRussian()
+    {
+        var englishRequest = new TextRequest { Text = "This is an test", Language = "en" };
+        var russianRequest = new TextRequest { Text = "Солнце светит ярко сегодня утром просто потрясающая погода чтобы прогуляться и насладиться свежим воздухом", Language = "ru" };
+
+        var englishResponse = await _service.CheckGrammar(englishRequest, null!);
+        var russianResponse = await _service.CheckGrammar(russianRequest, null!);
+
+        Assert.IsTrue(englishResponse.Errors.All(x => !string.IsNullOrEmpty(x.Message) && !string.IsNullOrEmpty(x.Sentence)));
+        Assert.IsTrue(russianResponse.Errors.All(x => !string.IsNullOrEmpty(x.Message) && !string.IsNullOrEmpty(x.Sentence)));
+    }
 }

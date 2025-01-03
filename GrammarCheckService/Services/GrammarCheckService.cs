@@ -6,11 +6,14 @@ public class GrammarCheckService : GrammarCheck.GrammarCheckBase
 {
     private readonly ILogger<GrammarCheckService> _logger;
 
+    private readonly GrammarChecker _grammarChecker;
     private readonly HunspellChecker _hunspellChecker;
     public GrammarCheckService(ILogger<GrammarCheckService> logger)
     {
         _logger = logger;
+        _grammarChecker = new GrammarChecker();
         _hunspellChecker = new HunspellChecker();
+
     }
 
     public override async Task<SpellingResponse> CheckSpelling(TextRequest request, ServerCallContext context)
@@ -36,11 +39,36 @@ public class GrammarCheckService : GrammarCheck.GrammarCheckBase
         return result;
     }
 
-    public override Task<GrammarResponse> CheckGrammar(TextRequest request, ServerCallContext context)
+    public override async Task<GrammarResponse> CheckGrammar(TextRequest request, ServerCallContext context)
     {
         _logger.LogInformation("CheckGrammar method called.");
 
-        return Task.FromResult(new GrammarResponse());
+        try
+        {
+            var grammarResponse = await _grammarChecker.CheckGrammar(request.Text, request.Language);
+
+            var rpcResponse = new GrammarResponse();
+            foreach (var error in grammarResponse.Errors)
+            {
+                rpcResponse.Errors.Add(new GrammarError
+                {
+                    Sentence = error.Sentence,
+                    Message = error.Message
+                });
+            }
+
+            return rpcResponse;
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError($"HTTP error during grammar check: {ex}");
+            throw new RpcException(new Status(StatusCode.Unavailable, "Grammar service is unavailable"));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Unexpected error during grammar check: {ex}");
+            throw new RpcException(new Status(StatusCode.Internal, "An internal error occurred"));
+        }
     }
 
     public override Task<SynonymResponse> GetSynonyms(SynonymRequest request, ServerCallContext context)

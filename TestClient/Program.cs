@@ -38,8 +38,13 @@ class Program
                 }
             }
 
+            textRequest = new TextRequest { Text = "Солнце светит ярко сегодня утром просто потрясающая погода чтобы прогуляться и насладиться свежим воздухом", Language = "ru" };
             var grammarResponse = await client.CheckGrammarAsync(textRequest);
-            Console.WriteLine("Grammar check completed!");
+            foreach (var error in grammarResponse.Errors)
+            {
+                Console.WriteLine($"Sentence: {error.Sentence}");
+                Console.WriteLine($"Message: {error.Message}");
+            }
 
             var synonymRequest = new SynonymRequest { Words = { "example" }, Language = "en" };
             var synonymResponse = await client.GetSynonymsAsync(synonymRequest);
