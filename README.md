@@ -37,7 +37,7 @@ This project provides a gRPC service that offers an API for checking the spellin
 ### Prerequisites
 
 - .NET Core SDK 6.0 or higher
-- LanguageTool API Key (if required)
+- LanguageTool API Key (if required a function to find synonyms)
 - gRPC tools for .NET
 
 ### Installation
