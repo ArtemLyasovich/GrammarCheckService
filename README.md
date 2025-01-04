@@ -44,8 +44,8 @@ This project provides a gRPC service that offers an API for checking the spellin
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
-   cd your-repo-name
+   git clone https://github.com/ArtemLyasovich/GrammarCheckService.git
+   cd GrammarCheckService
    ```
 2. Install the required dependencies:
   ```bash
@@ -55,11 +55,11 @@ This project provides a gRPC service that offers an API for checking the spellin
 
 1. Build the project:
 ```bash
-dotnet build
+dotnet build ./GrammarCheckService/GrammarCheckService.csproj
 ```
 2. Run the gRPC service:
 ```bash
-dotnet run
+dotnet run ./GrammarCheckService/GrammarCheckService.csproj
 ```
 3. Send gRPC requests to the service for spelling and grammar checks, and synonym suggestions.
 
