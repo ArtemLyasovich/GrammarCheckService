@@ -1,18 +1,45 @@
-namespace GrammarCheckService;
-
-class Program
+namespace GrammarCheckService
 {
-    static void Main(string[] args)
+    class Program
     {
-        var builder = WebApplication.CreateBuilder(args);
+        static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddGrpc();
-        builder.Services.AddLogging();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder => builder.AllowAnyOrigin()
+                                      .AllowAnyMethod()
+                                      .AllowAnyHeader());
+            });
 
-        var app = builder.Build();
+            builder.WebHost.UseKestrel(options =>
+            {
+                options.ConfigureHttpsDefaults(httpsOptions =>
+                {
+                    httpsOptions.SslProtocols = System.Security.Authentication.SslProtocols.Tls13;
+                });
+            });
 
-        app.MapGrpcService<Services.GrammarCheckService>();
+            builder.Services.AddGrpc();
 
-        app.Run();
+            builder.Services.AddGrpcClient<GrammarCheck.GrammarCheckClient>(o =>
+            {
+                o.Address = new Uri("https://localhost:5001");
+            });
+
+            builder.Services.AddControllers();
+            builder.Services.AddLogging();
+
+            var app = builder.Build();
+
+            app.UseCors("AllowAll");
+
+            app.MapGrpcService<Services.GrammarCheckService>();
+            app.MapControllers();
+
+            app.Run();
+        }
     }
 }

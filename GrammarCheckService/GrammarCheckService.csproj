@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-	  <Protobuf Include="../Protos/grammarcheck.proto" GrpcServices="Server" />
+	  <Protobuf Include="../Protos/grammarcheck.proto" GrpcServices="Both" />
   </ItemGroup>
-
+	
   <ItemGroup>
 	<None Include="$(SolutionDir)Dictionaries\**">
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

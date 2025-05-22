@@ -7,11 +7,13 @@ public class GrammarCheckService : GrammarCheck.GrammarCheckBase
     private readonly ILogger<GrammarCheckService> _logger;
 
     private readonly GrammarChecker _grammarChecker;
+    private readonly SynonymsChecker _synonymsChecker;
     private readonly HunspellChecker _hunspellChecker;
     public GrammarCheckService(ILogger<GrammarCheckService> logger)
     {
         _logger = logger;
         _grammarChecker = new GrammarChecker();
+        _synonymsChecker = new SynonymsChecker();
         _hunspellChecker = new HunspellChecker();
 
     }
@@ -71,10 +73,28 @@ public class GrammarCheckService : GrammarCheck.GrammarCheckBase
         }
     }
 
-    public override Task<SynonymResponse> GetSynonyms(SynonymRequest request, ServerCallContext context)
+    public override async Task<SynonymResponse> GetSynonyms(SynonymRequest request, ServerCallContext context)
     {
         _logger.LogInformation("GetSynonyms method called.");
 
-        return Task.FromResult(new SynonymResponse());
+        try
+        {
+            var synonymResponse = await _synonymsChecker.CheckSynonyms(request);
+
+            var rpcResponse = new SynonymResponse();
+            
+
+            return rpcResponse;
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError($"HTTP error during synonym check: {ex}");
+            throw new RpcException(new Status(StatusCode.Unavailable, "Synonym service is unavailable"));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Unexpected error during synonym check: {ex}");
+            throw new RpcException(new Status(StatusCode.Internal, "An internal error occurred"));
+        }
     }
 }
